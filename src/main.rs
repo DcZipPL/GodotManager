@@ -2,8 +2,6 @@
 
 pub mod components;
 
-use dioxus::html::style;
-// import the prelude to get access to the `rsx!` macro and the `Scope` and `Element` types
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use crate::components::version::VersionListing;
@@ -20,4 +18,10 @@ fn App(cx: Scope) -> Element {
             VersionListing {}
         },
     })
+}
+
+pub enum State {
+    Loading,
+    Loaded,
+    Error,
 }
