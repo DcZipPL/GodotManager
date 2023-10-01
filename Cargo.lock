@@ -1239,6 +1239,7 @@ dependencies = [
  "dioxus-desktop",
  "octocrab",
  "reqwest",
+ "serde",
 ]
 
 [[package]]
