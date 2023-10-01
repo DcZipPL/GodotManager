@@ -37,16 +37,25 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
 				handle_download_links(&downloads);
 			},
 			version.version.clone(),
-			span {
-				style: "margin-left: 8px; border: 1.5px #ffa200 solid; padding: 2px; border-radius: 5px;",
-				if version.prerelease {
-					"Prerelease"
-				} else {
-					""
-				}
+			if version.prerelease {
+				rsx!(
+					Badge {
+						text: "Pre-release".to_string()
+					}
+				)
 			}
 		}
     )
+}
+
+#[inline_props]
+pub fn Badge(cx: Scope, text: String) -> Element {
+	render!(
+		span {
+			style: "margin-left: 8px; border: 1.5px #ffa200 solid; padding: 2px; border-radius: 5px;",
+			text.to_string()
+		}
+	)
 }
 
 pub fn handle_download_links(downloads: &Vec<GodotVersionDownload>) {
