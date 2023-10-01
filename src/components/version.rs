@@ -32,14 +32,15 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
 	let downloads = get_godot_version_downloads(version);
 	render!(
 		div {
+			style: "padding: 8px;",
 			onclick: move |_event| {
 				handle_download_links(&downloads);
 			},
 			version.version.clone(),
 			span {
-				style: "color: red;",
+				style: "margin-left: 8px; border: 1.5px #ffa200 solid; padding: 2px; border-radius: 5px;",
 				if version.prerelease {
-					" (prerelease)"
+					"Prerelease"
 				} else {
 					""
 				}
@@ -57,7 +58,7 @@ pub fn handle_download_links(downloads: &Vec<GodotVersionDownload>) {
 					println!("Download at {}", download.name)
 				}
 			}
-			_ => {
+			_ => { // TODO: Handle linux
 				println!("Not implemented for this OS")
 			}
 		}
