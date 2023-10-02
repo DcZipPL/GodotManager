@@ -13,3 +13,4 @@ reqwest = "0.11.20"
 octocrab = "0.30.1"
 anyhow = "1.0.75"
 serde = { version = "1.0.188", features = ["derive"] }
+thiserror = "1.0.49"
