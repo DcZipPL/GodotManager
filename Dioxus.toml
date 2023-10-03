@@ -2,12 +2,21 @@
 name = "godot_manager"
 default_platform = "desktop"
 out_dir = "dist"
-asset_dir = "assets"
+asset_dir = "public"
+public_dir = "public"
 
 [web.app]
 
 [web.watcher]
+reload_html = true
+watch_path = ["src", "public"]
 
 [web.resource]
+style = [
+    "./assets/style.css"
+]
 
 [web.resource.dev]
+style = [
+    "./assets/style.css"
+]

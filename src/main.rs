@@ -2,6 +2,7 @@
 
 pub mod components;
 
+use dioxus::html::style;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use crate::components::version::VersionListing;
@@ -13,10 +14,22 @@ fn main() {
 
 fn App(cx: Scope) -> Element {
     cx.render(rsx! {
+        link { href: "./public/assets/style.css", rel:"stylesheet" },
         div {
-            style: "font-family: sans-serif;",
-            VersionListing {}
+            class: "topbar",
+            "hi"
         },
+        div {
+            class: "container",
+            div {
+                class: "sidebar",
+                "hi"
+            },
+            div {
+                class: "content",
+                VersionListing {}
+            }
+        }
     })
 }
 

@@ -1,0 +1,55 @@
+/* Overall Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #242424;
+}
+
+/* Top Bar */
+.topbar {
+    background-color: #a00;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+/* Buttons in Top Bar */
+.topbar .buttons {
+    display: flex;
+}
+
+.topbar .buttons button {
+    margin-left: 10px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Container for Sidebar and Content */
+.container {
+    display: flex;
+    flex-grow: 1;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: #424242;
+    width: 250px;
+    min-height: 100%;
+    padding: 20px;
+}
+
+/* Content Area */
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    color: #fff;
+}
