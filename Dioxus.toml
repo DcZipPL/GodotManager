@@ -1,0 +1,13 @@
+[application]
+name = "godot_manager"
+default_platform = "desktop"
+out_dir = "dist"
+asset_dir = "assets"
+
+[web.app]
+
+[web.watcher]
+
+[web.resource]
+
+[web.resource.dev]
