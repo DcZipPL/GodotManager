@@ -2,9 +2,11 @@
 
 pub mod components;
 
+use dioxus::html::button;
 use dioxus::prelude::*;
 use dioxus_desktop::{Config, LogicalSize, WindowBuilder};
 use dioxus_desktop::tao::dpi::{Size};
+use crate::components::message::Message;
 use crate::components::version::VersionListing;
 
 fn main() {
@@ -18,12 +20,26 @@ fn main() {
 }
 
 fn App(cx: Scope) -> Element {
+    use_shared_state_provider(cx, || MessageState::default());
+    let message_state = use_shared_state::<MessageState>(cx);
+
     cx.render(rsx! {
         link { href: "./public/assets/style.css", rel:"stylesheet" },
         link { href: "./public/assets/list.css", rel:"stylesheet" },
+        link { href: "./public/assets/message.css", rel:"stylesheet" },
+        Message { },
         div {
             class: "topbar",
-            "No updates available"
+            "No default godot version selected",
+            button {
+                onclick: move |_event| {
+					message_state.unwrap().write().message = None;
+				},
+                "Reset"
+            },
+            button {
+                "Run"
+            }
         },
         div {
             class: "container",
@@ -37,6 +53,11 @@ fn App(cx: Scope) -> Element {
             }
         }
     })
+}
+
+#[derive(Default)]
+pub struct MessageState {
+    pub message: Option<String>,
 }
 
 pub enum State {

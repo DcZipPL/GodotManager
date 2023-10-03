@@ -14,11 +14,13 @@ watch_path = ["src", "public"]
 [web.resource]
 style = [
     "./assets/style.css",
-    "./assets/list.css"
+    "./assets/list.css",
+    "./assets/message.css"
 ]
 
 [web.resource.dev]
 style = [
     "./assets/style.css",
-    "./assets/list.css"
+    "./assets/list.css",
+    "./assets/message.css"
 ]

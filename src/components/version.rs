@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use crate::components::{Badge, BadgeColor};
+use crate::MessageState;
 
 pub fn VersionListing(cx: Scope) -> Element {
 	let versions = use_future(cx, (), |_| get_godot_versions());
@@ -30,12 +31,15 @@ pub fn VersionListing(cx: Scope) -> Element {
 #[inline_props]
 pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
 	let downloads = get_godot_version_downloads(version);
+	let message_state = use_shared_state::<MessageState>(cx);
+
 	render!(
 		div {
 			class: "godot-version",
 			span {
 				class: "name",
 				onclick: move |_event| {
+					message_state.unwrap().write().message = Some(format!("Downloading Godot {}", version.version));
 					handle_download_links(&downloads);
 				},
 				version.version.clone()
