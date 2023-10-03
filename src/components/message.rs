@@ -16,6 +16,10 @@ pub fn Message(cx: Scope) -> Element {
 			},
 			span {
 				class: "popup-close",
+				onclick: move |_event| {
+					message_state.unwrap().write().done = true;
+				},
+				"×"
 			},
 			p {
 				class: "popup-message",
