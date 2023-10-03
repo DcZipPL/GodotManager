@@ -3,6 +3,7 @@ use octocrab::models::repos::{Asset, Release};
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
 use chrono::{DateTime, Utc};
+use crate::components::{Badge, BadgeColor};
 
 pub fn VersionListing(cx: Scope) -> Element {
 	let versions = use_future(cx, (), |_| get_godot_versions());
@@ -39,22 +40,13 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
 			if version.prerelease {
 				rsx!(
 					Badge {
+						color: BadgeColor::Yellow,
 						text: "Pre-release".to_string()
 					}
 				)
 			}
 		}
     )
-}
-
-#[inline_props]
-pub fn Badge(cx: Scope, text: String) -> Element {
-	render!(
-		span {
-			style: "margin-left: 8px; border: 1.5px #ffa200 solid; padding: 2px 4px; border-radius: 5px;",
-			text.to_string()
-		}
-	)
 }
 
 pub fn handle_download_links(downloads: &Vec<GodotVersionDownload>) {
