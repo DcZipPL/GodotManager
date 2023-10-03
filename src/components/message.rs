@@ -1,10 +1,11 @@
 use dioxus::prelude::*;
 
-pub fn Message(cx: Scope) -> Element {
+#[inline_props]
+pub fn Message(cx: Scope, content: String) -> Element {
 	render!(
 		div {
 			style: "padding: 8px;",
-			"Hello!"
+			content.to_owned()
 		}
 	)
 }

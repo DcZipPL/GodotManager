@@ -11,7 +11,7 @@ pub fn Badge(cx: Scope, color: BadgeColor, text: String) -> Element {
 		span {
 			class: "badge",
 			style: AttributeValue::Text(color_hex.leak()),
-			text.to_string()
+			text.to_owned()
 		}
 	)
 }
