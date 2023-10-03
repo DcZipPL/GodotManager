@@ -33,7 +33,7 @@ fn App(cx: Scope) -> Element {
             "No default godot version selected",
             button {
                 onclick: move |_event| {
-					message_state.unwrap().write().message = None;
+					message_state.unwrap().write().done = true;
 				},
                 "Reset"
             },
@@ -57,7 +57,8 @@ fn App(cx: Scope) -> Element {
 
 #[derive(Default)]
 pub struct MessageState {
-    pub message: Option<String>,
+    pub message: String,
+    pub done: bool,
 }
 
 pub enum State {

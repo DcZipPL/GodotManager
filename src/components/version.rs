@@ -39,7 +39,8 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
 			span {
 				class: "name",
 				onclick: move |_event| {
-					message_state.unwrap().write().message = Some(format!("Downloading Godot {}", version.version));
+					message_state.unwrap().write().message = format!("Downloading Godot {}", version.version);
+					message_state.unwrap().write().done = false;
 					handle_download_links(&downloads);
 				},
 				version.version.clone()
