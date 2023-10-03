@@ -1,0 +1,75 @@
+$topbar-height: 50px;
+$accent-color: #a00;
+
+:root {
+    accent-color: $accent-color;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+}
+
+// Overall Styling
+body {
+    font-family: sans-serif;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #242424;
+    color: #fff;
+}
+
+#main {
+    height: 100%;
+}
+
+// Top Bar
+.topbar {
+    background-color: $accent-color;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    height: $topbar-height;
+}
+
+// Buttons in Top Bar
+.topbar .buttons {
+    display: flex;
+}
+
+.topbar .buttons button {
+    margin-left: 10px;
+    background-color: #444;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+// Container for Sidebar and Content
+.container {
+    display: flex;
+    flex-grow: 1;
+    height: calc(100% - $topbar-height);
+}
+
+// Sidebar
+.sidebar {
+    background-color: #424242;
+    width: 250px;
+    min-height: 100%;
+    padding: 20px;
+}
+
+// Content Area
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow: auto;
+}
