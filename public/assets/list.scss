@@ -4,3 +4,12 @@
   padding: 2px 4px;
   border-radius: 5px;
 }
+
+.godot-version {
+  margin-bottom: 14px;
+
+  .name:hover {
+    cursor: pointer;
+    text-decoration: solid underline #fff;
+  }
+}

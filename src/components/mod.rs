@@ -6,7 +6,7 @@ pub mod message;
 
 #[inline_props]
 pub fn Badge(cx: Scope, color: BadgeColor, text: String) -> Element {
-	let color_hex: String = format!("border-color: {}", String::from(color)).to_string();
+	let color_hex: String = format!("border-color: {0}; color: {0}", String::from(color)).to_string();
 	render!(
 		span {
 			class: "badge",
@@ -26,7 +26,7 @@ pub enum BadgeColor {
 impl From<&BadgeColor> for String {
 	fn from(color: &BadgeColor) -> Self {
 		match color {
-			BadgeColor::Green => "#00eb00".to_string(),
+			BadgeColor::Green => "#00d100".to_string(),
 			BadgeColor::Yellow => "#ffa200".to_string(),
 			BadgeColor::Red => "#ff0000".to_string(),
 		}

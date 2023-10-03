@@ -13,10 +13,12 @@ watch_path = ["src", "public"]
 
 [web.resource]
 style = [
-    "./assets/style.css"
+    "./assets/style.css",
+    "./assets/list.css"
 ]
 
 [web.resource.dev]
 style = [
-    "./assets/style.css"
+    "./assets/style.css",
+    "./assets/list.css"
 ]

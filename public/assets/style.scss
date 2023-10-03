@@ -7,6 +7,7 @@ $accent-color: #a00;
 
 * {
     box-sizing: border-box;
+    user-select: none; // TODO: add override for code blocks
 }
 
 html {

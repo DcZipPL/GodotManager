@@ -32,16 +32,19 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
 	let downloads = get_godot_version_downloads(version);
 	render!(
 		div {
-			style: "padding: 8px;",
-			onclick: move |_event| {
-				handle_download_links(&downloads);
+			class: "godot-version",
+			span {
+				class: "name",
+				onclick: move |_event| {
+					handle_download_links(&downloads);
+				},
+				version.version.clone()
 			},
-			version.version.clone(),
-			if version.prerelease {
+			if !version.prerelease {
 				rsx!(
 					Badge {
-						color: BadgeColor::Yellow,
-						text: "Pre-release".to_string()
+						color: BadgeColor::Green,
+						text: "Stable".to_string()
 					}
 				)
 			}

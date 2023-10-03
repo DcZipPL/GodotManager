@@ -3,7 +3,6 @@
 pub mod components;
 
 use dioxus::prelude::*;
-use serde::{Deserialize, Serialize};
 use crate::components::version::VersionListing;
 
 fn main() {
@@ -14,6 +13,7 @@ fn main() {
 fn App(cx: Scope) -> Element {
     cx.render(rsx! {
         link { href: "./public/assets/style.css", rel:"stylesheet" },
+        link { href: "./public/assets/list.css", rel:"stylesheet" },
         div {
             class: "topbar",
             "hi"
