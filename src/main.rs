@@ -2,7 +2,6 @@
 
 pub mod components;
 
-use dioxus::html::style;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use crate::components::version::VersionListing;

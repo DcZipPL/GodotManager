@@ -1,21 +1,39 @@
+:root {
+    accent-color: #a00;
+    --topbar-height: 50px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+}
+
 /* Overall Styling */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100%;
     background-color: #242424;
+    color: #fff;
+}
+
+#main {
+    height: 100%;
 }
 
 /* Top Bar */
 .topbar {
     background-color: #a00;
-    color: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
+    height: var(--topbar-height);
 }
 
 /* Buttons in Top Bar */
@@ -26,7 +44,6 @@ body {
 .topbar .buttons button {
     margin-left: 10px;
     background-color: #444;
-    color: #fff;
     border: none;
     padding: 8px 16px;
     border-radius: 4px;
@@ -37,6 +54,7 @@ body {
 .container {
     display: flex;
     flex-grow: 1;
+    height: calc(100% - var(--topbar-height));
 }
 
 /* Sidebar */
@@ -51,5 +69,5 @@ body {
 .content {
     flex-grow: 1;
     padding: 20px;
-    color: #fff;
+    overflow: auto;
 }

@@ -107,12 +107,20 @@ pub struct GodotVersionDownload {
 }
 
 impl From<Release> for GodotVersion {
-	fn from(p: Release) -> Self {
+	fn from(r: Release) -> Self {
 		Self {
-			version: p.name.unwrap_or("No version".to_owned()),
-			uploaded_at: p.published_at,
-			assets: p.assets,
-			prerelease: p.prerelease,
+			version: if let Some(version_name) = r.name {
+				if !version_name.is_empty() {
+					version_name
+				} else {
+					r.tag_name
+				}
+			} else {
+				r.tag_name
+			},
+			uploaded_at: r.published_at,
+			assets: r.assets,
+			prerelease: r.prerelease,
 		}
 	}
 }
