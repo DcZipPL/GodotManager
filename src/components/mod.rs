@@ -3,6 +3,7 @@ use dioxus::prelude::*;
 
 pub mod version;
 pub mod message;
+pub mod sidebar;
 
 #[inline_props]
 pub fn Badge(cx: Scope, color: BadgeColor, text: String) -> Element {
@@ -10,7 +11,7 @@ pub fn Badge(cx: Scope, color: BadgeColor, text: String) -> Element {
 	render!(
 		span {
 			class: "badge",
-			style: AttributeValue::Text(color_hex.leak()),
+			style: AttributeValue::Text(color_hex.leak()), // TODO: Don't leak
 			text.to_owned()
 		}
 	)

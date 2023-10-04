@@ -53,17 +53,36 @@ body {
   height: calc(100% - 50px);
 }
 
+.content {
+  flex-grow: 1;
+  padding: 20px;
+  overflow: auto;
+}
+
 .sidebar {
   background-color: #424242;
   width: 250px;
   min-height: 100%;
   padding: 20px;
 }
+.sidebar .item {
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+.sidebar .item.selected {
+  color: #a00;
+}
 
-.content {
-  flex-grow: 1;
-  padding: 20px;
-  overflow: auto;
+.notice {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 12px;
+  color: #fff;
+  text-align: right;
+}
+.notice a {
+  color: #a00;
 }
 
 /*# sourceMappingURL=style.css.map */
