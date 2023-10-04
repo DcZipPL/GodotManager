@@ -66,11 +66,14 @@ fn App(cx: Scope) -> Element {
 		div {
 			class: "topbar",
 			"No default godot version selected",
-			button {
-				"Reset"
-			},
-			button {
-				"Run"
+			div {
+				class: "buttons",
+				button {
+					"Reset"
+				},
+				button {
+					"Run"
+				}
 			}
 		},
 		div {
