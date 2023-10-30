@@ -64,42 +64,48 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
 pub async fn filter_download_links_and_download(downloads: Vec<GodotVersionDownload>, is_mono: bool) {
 
 	for download in downloads {
-		let os_type = std::env::consts::OS;
 		let arch = std::env::consts::ARCH;
-		match os_type {
-			"windows" => {
-				match arch {
-					"x86_64" => {
-						if download.name.contains("win64") {
-							if is_mono && download.name.contains("mono") {
-								println!("[64+MONO] Download at {}", download.url);
-								download_godot(download.url, download.name).await;
-							} else if !is_mono && !download.name.contains("mono") {
-								println!("[64] Download at {}", download.url);
-								download_godot(download.url, download.name).await;
-							}
-						}
-					}
-					"x86" => {
-						if download.name.contains("win32") {
-							if is_mono && download.name.contains("mono") {
-								println!("[32+MONO] Download at {}", download.url);
-								download_godot(download.url, download.name).await;
-							} else if !is_mono && !download.name.contains("mono") {
-								println!("[32] Download at {}", download.url);
-								download_godot(download.url, download.name).await;
-							}
-						}
-					}
-					_ => { // TODO: Handle other architectures
-						println!("Not implemented for this architecture")
-					}
+
+		#[cfg(unix)]
+		match arch {
+			"x86_64" => {
+				if download.name.contains("linux_x86_64") {
+					filter_mono_and_download_godot(download.url, download.name, is_mono).await;
 				}
 			}
-			_ => { // TODO: Handle linux
-				println!("Not implemented for this OS")
+			"x86" => {
+				if download.name.contains("linux_x86_32") {
+					filter_mono_and_download_godot(download.url, download.name, is_mono).await;
+				}
+			}
+			_ => { // TODO: Handle other architectures
+				println!("Not implemented for this architecture")
 			}
 		}
+		#[cfg(windows)]
+		match arch {
+			"x86_64" => {
+				if download.name.contains("win64") {
+					filter_mono_and_download_godot(download.url, download.name, is_mono).await;
+				}
+			}
+			"x86" => {
+				if download.name.contains("win32") {
+					filter_mono_and_download_godot(download.url, download.name, is_mono).await;
+				}
+			}
+			_ => { // TODO: Handle other architectures
+				println!("Not implemented for this architecture")
+			}
+		}
+	}
+}
+
+pub async fn filter_mono_and_download_godot(url: String, name: String, is_mono: bool) {
+	if is_mono && name.contains("mono") {
+		download_godot(url, name).await;
+	} else if !is_mono && !name.contains("mono") {
+		download_godot(url, name).await;
 	}
 }
 
