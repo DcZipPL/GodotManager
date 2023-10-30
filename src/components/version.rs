@@ -1,4 +1,5 @@
-use std::fs::File;
+use std::env;
+use std::fs::{create_dir_all, File};
 use std::io::Write;
 use dioxus::prelude::*;
 use octocrab::models::repos::{Asset, Release};
@@ -44,7 +45,7 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
 				onclick: move |_event| {
 					message_state.unwrap().write().message = format!("Downloading Godot {}", version.version);
 					message_state.unwrap().write().done = false; // TODO: Add a checkbox for mono
-					filter_download_links_and_download(downloads.clone(), true)
+					filter_download_links_and_download(downloads.clone(), version.version.clone(), true)
 				},
 				version.version.clone()
 			},
@@ -58,65 +59,6 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
 			}
 		}
     )
-}
-
-// Note: cannot borrow downloads because it is handled by the async closure return
-pub async fn filter_download_links_and_download(downloads: Vec<GodotVersionDownload>, is_mono: bool) {
-
-	for download in downloads {
-		let arch = std::env::consts::ARCH;
-
-		#[cfg(target_os = "linux")]
-		match arch {
-			"x86_64" => {
-				if download.name.contains("linux_x86_64") {
-					filter_mono_and_download_godot(download.url, download.name, is_mono).await;
-				}
-			}
-			"x86" => {
-				if download.name.contains("linux_x86_32") {
-					filter_mono_and_download_godot(download.url, download.name, is_mono).await;
-				}
-			}
-			_ => { // TODO: Handle other architectures
-				println!("Not implemented for this architecture")
-			}
-		}
-		#[cfg(target_os = "windows")]
-		match arch {
-			"x86_64" => {
-				if download.name.contains("win64") {
-					filter_mono_and_download_godot(download.url, download.name, is_mono).await;
-				}
-			}
-			"x86" => {
-				if download.name.contains("win32") {
-					filter_mono_and_download_godot(download.url, download.name, is_mono).await;
-				}
-			}
-			_ => { // TODO: Handle other architectures
-				println!("Not implemented for this architecture")
-			}
-		}
-	}
-}
-
-pub async fn filter_mono_and_download_godot(url: String, name: String, is_mono: bool) {
-	if is_mono && name.contains("mono") {
-		download_godot(url, name).await;
-	} else if !is_mono && !name.contains("mono") {
-		download_godot(url, name).await;
-	}
-}
-
-pub async fn download_godot(url: String, name: String) {
-	#[cfg(unix)]
-		let app_data = std::env::var("HOME").expect("No HOME directory");
-	#[cfg(windows)]
-		let app_data = std::env::var("APPDATA").expect("No APP_DATA directory");
-
-	let downloaded_bytes = reqwest::get(&url).await.unwrap().bytes().await.unwrap(); // TODO: Handle these unwraps
-	File::create(format!("{}/Godot Manager/Downloads/{}", app_data, name)).unwrap().write_all(&downloaded_bytes).unwrap();
 }
 
 pub async fn get_godot_versions() -> Result<Vec<GodotVersion>> {
@@ -179,4 +121,75 @@ impl From<Asset> for GodotVersionDownload {
 			content_type: p.content_type,
 		}
 	}
+}
+
+// GODOT DOWNLOAD CODE
+
+// Note: cannot borrow downloads and version because it is handled by the async closure return
+pub async fn filter_download_links_and_download(downloads: Vec<GodotVersionDownload>, version: String, is_mono: bool) {
+	for download in downloads {
+		if download.content_type == "application/zip" {
+			let arch = env::consts::ARCH;
+
+			#[cfg(target_os = "linux")]
+			match arch {
+				"x86_64" => {
+					if download.name.contains("linux_x86_64") {
+						filter_mono_and_download_godot(download.url, download.name, &version, is_mono).await.unwrap();
+					}
+				}
+				"x86" => {
+					if download.name.contains("linux_x86_32") {
+						filter_mono_and_download_godot(download.url, download.name, &version, is_mono).await.unwrap();
+					}
+				}
+				_ => { // TODO: Handle other architectures
+					println!("Not implemented for this architecture")
+				}
+			}
+			#[cfg(target_os = "windows")]
+			match arch {
+				"x86_64" => {
+					if download.name.contains("win64") {
+						filter_mono_and_download_godot(download.url, download.name, &version, is_mono).await.unwrap();
+					}
+				}
+				"x86" => {
+					if download.name.contains("win32") {
+						filter_mono_and_download_godot(download.url, download.name, &version, is_mono).await.unwrap();
+					}
+				}
+				_ => { // TODO: Handle other architectures
+					println!("Not implemented for this architecture")
+				}
+			}
+		}
+	}
+}
+
+pub async fn filter_mono_and_download_godot(url: String, name: String, version: &String, is_mono: bool) -> Result<()> {
+	if is_mono && name.contains("mono") {
+		download_godot(url, name, version).await?;
+	} else if !is_mono && !name.contains("mono") {
+		download_godot(url, name, version).await?;
+	}
+	Ok(())
+}
+
+pub async fn download_godot(url: String, name: String, version: &String) -> Result<()> {
+	#[cfg(unix)]
+		let app_data = env::var("HOME").expect("No HOME directory");
+	#[cfg(windows)]
+		let app_data = env::var("APPDATA").expect("No APP_DATA directory");
+
+	let downloaded_bytes = reqwest::get(&url).await?.bytes().await?; // TODO: Handle these unwraps
+
+	let instance_dir: String = format!("{}/Godot Manager/Instances/{}", app_data, version);
+	let downloads_dir: String = format!("{}/Godot Manager/Instances/{}", app_data, version);
+
+	create_dir_all(&instance_dir)?;
+	create_dir_all(&downloads_dir)?;
+
+	File::create(format!("{}/GM_download_{}.tmp", env::temp_dir().to_str().unwrap_or(downloads_dir.as_str()), name))?.write_all(&downloaded_bytes)?;
+	Ok(())
 }
