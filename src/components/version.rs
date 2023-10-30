@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use anyhow::Result;
 use bytes::Bytes;
 use chrono::{DateTime, Utc};
+use log::{debug, error, info};
 use zip::ZipArchive;
 use crate::components::{Badge, BadgeColor};
 use crate::MessageState;
@@ -145,7 +146,7 @@ pub async fn filter_download_links_and_download(downloads: Vec<GodotVersionDownl
 					}
 				}
 				_ => { // TODO: Handle other architectures
-					println!("Not implemented for this architecture")
+					error!("Not implemented for this architecture")
 				}
 			}
 			#[cfg(target_os = "windows")]
@@ -161,7 +162,7 @@ pub async fn filter_download_links_and_download(downloads: Vec<GodotVersionDownl
 					}
 				}
 				_ => { // TODO: Handle other architectures
-					println!("Not implemented for this architecture")
+					error!("Not implemented for this architecture")
 				}
 			}
 		}
@@ -193,7 +194,7 @@ pub async fn download_godot(url: String, name: String, version: &String, is_mono
 	create_dir_all(&instance_dir)?;
 	create_dir_all(&downloads_dir)?;
 
-	println!("Downloading {}", name);
+	info!("Downloading {}", name);
 
 	// Do it in memory without writing to temp file
 	let cursor = Cursor::new(downloaded_bytes);
@@ -202,10 +203,10 @@ pub async fn download_godot(url: String, name: String, version: &String, is_mono
 		let mut file = zip_archive.by_index(i)?;
 		let file_path = format!("{}/{}", instance_dir, file.name().split_once('/').unwrap_or(("", file.name())).1);
 		if file.is_dir() {
-			println!("[D] Extracting: {}", file.name());
+			debug!("[D] Extracting: {}", file.name());
 			create_dir_all(&file_path)?;
 		} else {
-			println!("[F] Extracting: {}", file.name());
+			debug!("[F] Extracting: {}", file.name());
 			let mut buffer = Vec::new();
 			file.read_to_end(&mut buffer)?;
 			let mut out_file = File::create(&file_path)?;

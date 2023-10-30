@@ -2,7 +2,6 @@
 
 pub mod components;
 
-use dioxus::html::{br, span};
 use dioxus::prelude::*;
 use dioxus_desktop::{Config, LogicalSize, WindowBuilder};
 use dioxus_desktop::tao::dpi::{Size};
@@ -11,6 +10,8 @@ use crate::components::sidebar::{Sidebar, SidebarItem};
 use crate::components::version::VersionListing;
 
 fn main() {
+	pretty_env_logger::init();
+
 	// launch the dioxus app in a webview
 	dioxus_desktop::launch_cfg(App, Config::default().with_window(
 		WindowBuilder::new()
