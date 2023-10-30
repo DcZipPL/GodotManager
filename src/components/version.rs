@@ -1,12 +1,13 @@
 use std::env;
 use std::fs::{create_dir_all, File};
-use std::io::Write;
+use std::io::{Cursor, Read, Write};
 use dioxus::prelude::*;
 use octocrab::models::repos::{Asset, Release};
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
+use bytes::Bytes;
 use chrono::{DateTime, Utc};
-use reqwest::{Method, Request, Url};
+use zip::ZipArchive;
 use crate::components::{Badge, BadgeColor};
 use crate::MessageState;
 
@@ -169,27 +170,48 @@ pub async fn filter_download_links_and_download(downloads: Vec<GodotVersionDownl
 
 pub async fn filter_mono_and_download_godot(url: String, name: String, version: &String, is_mono: bool) -> Result<()> {
 	if is_mono && name.contains("mono") {
-		download_godot(url, name, version).await?;
+		download_godot(url, name, version, is_mono).await?;
 	} else if !is_mono && !name.contains("mono") {
-		download_godot(url, name, version).await?;
+		download_godot(url, name, version, is_mono).await?;
 	}
 	Ok(())
 }
 
-pub async fn download_godot(url: String, name: String, version: &String) -> Result<()> {
+pub async fn download_godot(url: String, name: String, version: &String, is_mono: bool) -> Result<()> {
 	#[cfg(unix)]
 		let app_data = env::var("HOME").expect("No HOME directory");
 	#[cfg(windows)]
 		let app_data = env::var("APPDATA").expect("No APP_DATA directory");
 
-	let downloaded_bytes = reqwest::get(&url).await?.bytes().await?; // TODO: Handle these unwraps
+	let downloaded_bytes: Bytes = reqwest::get(&url).await?.bytes().await?; // TODO: Handle these unwraps
 
-	let instance_dir: String = format!("{}/Godot Manager/Instances/{}", app_data, version);
-	let downloads_dir: String = format!("{}/Godot Manager/Instances/{}", app_data, version);
+	let mono = if is_mono { "/mono/" } else { "/standalone/" };
+
+	let instance_dir: String = format!("{}/Godot Manager/Instances{}{}", app_data, mono, version);
+	let downloads_dir: String = format!("{}/Godot Manager/Instances{}{}", app_data, mono, version);
 
 	create_dir_all(&instance_dir)?;
 	create_dir_all(&downloads_dir)?;
 
-	File::create(format!("{}/GM_download_{}.tmp", env::temp_dir().to_str().unwrap_or(downloads_dir.as_str()), name))?.write_all(&downloaded_bytes)?;
+	println!("Downloading {}", name);
+
+	// Do it in memory without writing to temp file
+	let cursor = Cursor::new(downloaded_bytes);
+	let mut zip_archive = ZipArchive::new(cursor)?;
+	for i in 0..zip_archive.len() {
+		let mut file = zip_archive.by_index(i)?;
+		let file_path = format!("{}/{}", instance_dir, file.name().split_once('/').unwrap_or(("", file.name())).1);
+		if file.is_dir() {
+			println!("[D] Extracting: {}", file.name());
+			create_dir_all(&file_path)?;
+		} else {
+			println!("[F] Extracting: {}", file.name());
+			let mut buffer = Vec::new();
+			file.read_to_end(&mut buffer)?;
+			let mut out_file = File::create(&file_path)?;
+			out_file.write_all(&buffer)?;
+		}
+	}
+
 	Ok(())
 }
