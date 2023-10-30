@@ -71,12 +71,20 @@ pub fn handle_download_links(downloads: &Vec<GodotVersionDownload>, is_mono: boo
 				match arch {
 					"x86_64" => {
 						if download.name.contains("win64") {
-							println!("[64] Download at {}", download.name)
+							if is_mono && download.name.contains("mono") {
+								println!("[64+MONO] Download at {}", download.name)
+							} else if !is_mono && !download.name.contains("mono") {
+								println!("[64] Download at {}", download.name)
+							}
 						}
 					}
 					"x86" => {
 						if download.name.contains("win32") {
-							println!("[32] Download at {}", download.name)
+							if is_mono && download.name.contains("mono") {
+								println!("[32+MONO] Download at {}", download.name)
+							} else if !is_mono && !download.name.contains("mono") {
+								println!("[32] Download at {}", download.name)
+							}
 						}
 					}
 					_ => { // TODO: Handle other architectures
