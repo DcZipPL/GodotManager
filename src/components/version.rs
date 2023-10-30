@@ -66,7 +66,7 @@ pub async fn filter_download_links_and_download(downloads: Vec<GodotVersionDownl
 	for download in downloads {
 		let arch = std::env::consts::ARCH;
 
-		#[cfg(unix)]
+		#[cfg(target_os = "linux")]
 		match arch {
 			"x86_64" => {
 				if download.name.contains("linux_x86_64") {
@@ -82,7 +82,7 @@ pub async fn filter_download_links_and_download(downloads: Vec<GodotVersionDownl
 				println!("Not implemented for this architecture")
 			}
 		}
-		#[cfg(windows)]
+		#[cfg(target_os = "windows")]
 		match arch {
 			"x86_64" => {
 				if download.name.contains("win64") {
