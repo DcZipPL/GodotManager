@@ -41,7 +41,7 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
 				onclick: move |_event| {
 					message_state.unwrap().write().message = format!("Downloading Godot {}", version.version);
 					message_state.unwrap().write().done = false;
-					handle_download_links(&downloads);
+					handle_download_links(&downloads, true); // TODO: Add a checkbox for mono
 				},
 				version.version.clone()
 			},
@@ -57,13 +57,31 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
     )
 }
 
-pub fn handle_download_links(downloads: &Vec<GodotVersionDownload>) {
+pub fn handle_download_links(downloads: &Vec<GodotVersionDownload>, is_mono: bool) {
+	#[cfg(unix)]
+		let app_data = std::env::var("HOME").expect("No HOME directory");
+	#[cfg(windows)]
+		let app_data = std::env::var("APPDATA").expect("No APP_DATA directory");
+
 	for download in downloads {
 		let os_type = std::env::consts::OS;
+		let arch = std::env::consts::ARCH;
 		match os_type {
 			"windows" => {
-				if download.name.contains("win") {
-					println!("Download at {}", download.name)
+				match arch {
+					"x86_64" => {
+						if download.name.contains("win64") {
+							println!("[64] Download at {}", download.name)
+						}
+					}
+					"x86" => {
+						if download.name.contains("win32") {
+							println!("[32] Download at {}", download.name)
+						}
+					}
+					_ => { // TODO: Handle other architectures
+						println!("Not implemented for this architecture")
+					}
 				}
 			}
 			_ => { // TODO: Handle linux
