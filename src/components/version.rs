@@ -1,8 +1,11 @@
+use std::fs::File;
+use std::io::Write;
 use dioxus::prelude::*;
 use octocrab::models::repos::{Asset, Release};
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
 use chrono::{DateTime, Utc};
+use reqwest::{Method, Request, Url};
 use crate::components::{Badge, BadgeColor};
 use crate::MessageState;
 
@@ -40,8 +43,8 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
 				class: "name",
 				onclick: move |_event| {
 					message_state.unwrap().write().message = format!("Downloading Godot {}", version.version);
-					message_state.unwrap().write().done = false;
-					handle_download_links(&downloads, true); // TODO: Add a checkbox for mono
+					message_state.unwrap().write().done = false; // TODO: Add a checkbox for mono
+					filter_download_links_and_download(downloads.clone(), true)
 				},
 				version.version.clone()
 			},
@@ -57,11 +60,8 @@ pub fn VersionComponent(cx: Scope, version: GodotVersion) -> Element {
     )
 }
 
-pub fn handle_download_links(downloads: &Vec<GodotVersionDownload>, is_mono: bool) {
-	#[cfg(unix)]
-		let app_data = std::env::var("HOME").expect("No HOME directory");
-	#[cfg(windows)]
-		let app_data = std::env::var("APPDATA").expect("No APP_DATA directory");
+// Note: cannot borrow downloads because it is handled by the async closure return
+pub async fn filter_download_links_and_download(downloads: Vec<GodotVersionDownload>, is_mono: bool) {
 
 	for download in downloads {
 		let os_type = std::env::consts::OS;
@@ -72,18 +72,22 @@ pub fn handle_download_links(downloads: &Vec<GodotVersionDownload>, is_mono: boo
 					"x86_64" => {
 						if download.name.contains("win64") {
 							if is_mono && download.name.contains("mono") {
-								println!("[64+MONO] Download at {}", download.name)
+								println!("[64+MONO] Download at {}", download.url);
+								download_godot(download.url, download.name).await;
 							} else if !is_mono && !download.name.contains("mono") {
-								println!("[64] Download at {}", download.name)
+								println!("[64] Download at {}", download.url);
+								download_godot(download.url, download.name).await;
 							}
 						}
 					}
 					"x86" => {
 						if download.name.contains("win32") {
 							if is_mono && download.name.contains("mono") {
-								println!("[32+MONO] Download at {}", download.name)
+								println!("[32+MONO] Download at {}", download.url);
+								download_godot(download.url, download.name).await;
 							} else if !is_mono && !download.name.contains("mono") {
-								println!("[32] Download at {}", download.name)
+								println!("[32] Download at {}", download.url);
+								download_godot(download.url, download.name).await;
 							}
 						}
 					}
@@ -97,6 +101,16 @@ pub fn handle_download_links(downloads: &Vec<GodotVersionDownload>, is_mono: boo
 			}
 		}
 	}
+}
+
+pub async fn download_godot(url: String, name: String) {
+	#[cfg(unix)]
+		let app_data = std::env::var("HOME").expect("No HOME directory");
+	#[cfg(windows)]
+		let app_data = std::env::var("APPDATA").expect("No APP_DATA directory");
+
+	let downloaded_bytes = reqwest::get(&url).await.unwrap().bytes().await.unwrap(); // TODO: Handle these unwraps
+	File::create(format!("{}/Godot Manager/Downloads/{}", app_data, name)).unwrap().write_all(&downloaded_bytes).unwrap();
 }
 
 pub async fn get_godot_versions() -> Result<Vec<GodotVersion>> {
